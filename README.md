@@ -4,7 +4,7 @@
 
 ## Overview
 This library aims to operationalize the *literature review process*.
-Given a set of articles, it filters through titles and abstracts with inclusion/exclusion criteria, an organizes papers for downstream analyses and reporting
+Given a list of articles, it filters through titles and abstracts with inclusion/exclusion criteria, and organizes papers for downstream analyses and reporting
 
 ## Installation
    - Find the folder you saved this repository to. Copy it. 

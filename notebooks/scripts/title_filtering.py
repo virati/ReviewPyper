@@ -5,7 +5,6 @@
 # %%
 # bring in relevant API keys
 from dotenv import dotenv_values
-# import revpyper.sys_rev.review_agent as review_agent
 
 config = dotenv_values("../../.env")
 
