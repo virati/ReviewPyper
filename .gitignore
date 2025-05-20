@@ -39,3 +39,4 @@ venv/
 ENV/
 VENV/
 ReviewPyPerVenv/
+*.egg-info/

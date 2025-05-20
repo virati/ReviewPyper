@@ -1,6 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
-from revpyper.chatgpt.gpt_utils.openai_chat_base import OpenAIChatBase
+from revpyper.agents.chatgpt.gpt_utils.openai_chat_base import OpenAIChatBase
 
 
 class TitleScreener(OpenAIChatBase):
@@ -58,13 +58,11 @@ class TitleScreener(OpenAIChatBase):
     """
 
     def __init__(
-        self, api_key_path, csv_path, question, model_choice="gpt3_small", keywords=None
+        self, api_key, csv_path, question, model_choice="gpt3_small", keywords=None
     ):
         self.csv_path = csv_path
         self.keywords = keywords
-        super().__init__(
-            api_key_path=api_key_path, question=question, model_choice=model_choice
-        )
+        super().__init__(api_key=api_key, question=question, model_choice=model_choice)
         self.df = pd.read_csv(csv_path)
 
     def keyword_screen(self):
