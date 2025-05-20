@@ -1,4 +1,4 @@
-from calvin_utils.gpt_sys_review.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
+from calvai.gpt_sys_review.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
 
 class OpenAISummarizer(OpenAIJsonEvaluator):
     """

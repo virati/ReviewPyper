@@ -1,6 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
-from calvin_utils.gpt_sys_review.gpt_utils.title_screening import TitleScreener
+from calvai.gpt_sys_review.gpt_utils.title_screening import TitleScreener
 
 class AbstractScreener(TitleScreener):
     """

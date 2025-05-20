@@ -1,8 +1,8 @@
 import time
 import openai
 import numpy as np
-from calvin_utils.gpt_sys_review.txt_utils import TextChunker
-from calvin_utils.gpt_sys_review.gpt_utils.openai_base import OpenAIBase
+from calvai.gpt_sys_review.txt_utils import TextChunker
+from calvai.gpt_sys_review.gpt_utils.openai_base import OpenAIBase
 
 class OpenAIChatBase(OpenAIBase):
     """
