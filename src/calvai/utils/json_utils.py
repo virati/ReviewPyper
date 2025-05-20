@@ -1,5 +1,5 @@
 from tqdm import tqdm
-from calvai.chatgpt.txt_utils import TextChunker
+from calvai.utils.txt_utils import TextChunker
 from calvai.chatgpt.gpt_utils.openai_labeller import CaseReportLabeler
 from calvai.chatgpt.gpt_utils.openai_summarizer import OpenAISummarizer
 from fuzzywuzzy import fuzz
