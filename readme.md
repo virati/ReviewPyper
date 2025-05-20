@@ -1,7 +1,6 @@
-![ReviewPyper Logo](assets/logo.png)
-
 
 # Project Repository README
+![ReviewPyper Logo](assets/logo.png)
 
 **Installation**
    - Find the folder you saved this repository to. Copy it. 
