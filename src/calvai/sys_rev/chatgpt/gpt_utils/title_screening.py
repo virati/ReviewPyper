@@ -1,6 +1,6 @@
 import pandas as pd
 from tqdm import tqdm
-from calvai.gpt_sys_review.gpt_utils.openai_chat_base import OpenAIChatBase
+from calvai.chatgpt.gpt_utils.openai_chat_base import OpenAIChatBase
 
 class TitleScreener(OpenAIChatBase):
     """

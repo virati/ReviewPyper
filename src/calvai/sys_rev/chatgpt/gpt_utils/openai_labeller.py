@@ -1,4 +1,4 @@
-from calvai.gpt_sys_review.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
+from calvai.chatgpt.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
 
 class CaseReportLabeler(OpenAIJsonEvaluator):
     """

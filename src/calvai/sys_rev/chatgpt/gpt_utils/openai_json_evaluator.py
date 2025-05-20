@@ -3,7 +3,7 @@ import sys
 import json
 import time
 from tqdm import tqdm
-from calvai.gpt_sys_review.gpt_utils.openai_chat_base import OpenAIChatBase
+from calvai.chatgpt.gpt_utils.openai_chat_base import OpenAIChatBase
 
 class OpenAIJsonEvaluator(OpenAIChatBase):
     def __init__(self, api_key_path, json_file_path, keys_to_consider, question, question_type='research',  model_choice="gpt3_small", debug=False, test_mode=True):
