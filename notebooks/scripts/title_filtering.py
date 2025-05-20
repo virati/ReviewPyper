@@ -4,42 +4,39 @@
 
 # %%
 # bring in relevant API keys
-import revpyper.utils.load_api_keys
-import revpyper.sys_rev.review_agent as review_agent
+from dotenv import dotenv_values
+# import revpyper.sys_rev.review_agent as review_agent
 
-load_api_keys()
-
-# %% [markdown]
-# 01 - First Assess Titles
-paper_list_csv_path = "/Users/cu135/Partners HealthCare Dropbox/Calvin Howard/studies/ccm_memory/results/review_pyper/invasive/1962-2013_spreadsheet.csv"
-core_question = "Does this article look like it may contain a report of invasive brain stimulation altering memory?"
-# setup our analysis
-Analysis(paper_list=paper_list_csv_path, core_question=core_question)
+config = dotenv_values("../../.env")
 
 # %% [markdown]
+# ## First Assess Titles
 # Define Path to CSV and Question
 # - csv_path = "path/to/your/titles.csv"
 # - question = "Is this title related to medical research?"
 # - keywords_list = ["focal", "lesion", "brain", "death", "case"]
 
-# %%
-csv_path = "/Users/cu135/Partners HealthCare Dropbox/Calvin Howard/studies/ccm_memory/results/review_pyper/invasive/1962-2013_spreadsheet.csv"
-question = " Examples could include articles that talk about `brain stimulation`, `invasive EEG`, or `DBS`, and may discuss `memory enhancement`, `memory impairment`, or diseases like `alzheimers`."
+
+# paper_list_csv_path = "/Users/cu135/Partners HealthCare Dropbox/Calvin Howard/studies/ccm_memory/results/review_pyper/invasive/1962-2013_spreadsheet.csv"
+# core_question = "Does this article look like it may contain a report of invasive brain stimulation altering memory?"
+paper_list_csv_path = "../../assets/test_papers.csv"
+system_prompt = ""
+core_question_prompt = ""
+examples_prompt = "Examples could include articles that talk about `brain stimulation`, `invasive EEG`, or `DBS`, and may discuss `memory enhancement`, `memory impairment`, or diseases like `alzheimers`."
+
 
 # %% [markdown]
 # If you also want to perform a keyword-based assessment (free), you can enter a list of strings here:
 # - Just set to None if you don't want to use it. But it's a good baseline.
 # - example: ["Alice in Wonderland Syndrome", "macropsia", "micropsia"]
-
-# %%
 keywords_list = None
 
 # %%
 from calvin_utils.gpt_sys_review.gpt_utils import TitleScreener
 
 title_screening = TitleScreener(
-    api_key_path=openai_key_path,
-    csv_path=csv_path,
+    api_key_path=open_ai_key,
+    csv_path=paper_list_csv_path,
     question=question,
     keywords=keywords_list,
     model_choice="gpt3_small",
