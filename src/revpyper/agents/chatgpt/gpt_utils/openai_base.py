@@ -1,6 +1,6 @@
 import openai
 from typing import Union
-from pathlib import path
+from pathlib import Path
 
 
 class OpenAIBase:
@@ -18,7 +18,7 @@ class OpenAIBase:
     - evaluate_with_openai: Evaluates a text chunk based on the question corresponding to the article type.
     """
 
-    def __init__(self, api_key: Union[str, path] = None):
+    def __init__(self, api_key: Union[str, Path] = None):
         """
         Initializes the OpenAIEvaluator class.
 
@@ -29,7 +29,7 @@ class OpenAIBase:
         """
         if api_key is None:
             raise ValueError("API Key must be provided")
-        if type(api_key) is path:
+        if type(api_key) is Path:
             self.api_key = self.read_api_key(api_key)
         elif type(api_key) is str:
             self.api_key = api_key

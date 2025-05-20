@@ -1,7 +1,7 @@
 import time
 import openai
 import numpy as np
-from revpyper.chatgpt.txt_utils import TextChunker
+from revpyper.utils.txt import TextChunker
 from revpyper.agents.chatgpt.gpt_utils.openai_base import OpenAIBase
 
 
@@ -10,9 +10,9 @@ class OpenAIChatBase(OpenAIBase):
     Base class to evaluate text chunks using OpenAI's chat models.
     """
 
-    def __init__(self, api_key, question_type, model_choice="gpt3_small", debug=False):
+    def __init__(self, api_key, question, model_choice="gpt3_small", debug=False):
         super().__init__(api_key)
-        self.question_type = question_type
+        self.question_type = question
         self.chunk_end = None
         self.debug = debug
         self.q_index = 0
