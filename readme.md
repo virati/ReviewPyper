@@ -1,13 +1,17 @@
 
-# Project Repository README
+# ReviewPyper
 ![ReviewPyper Logo](assets/logo.png)
 
-**Installation**
+## Overview
+This library aims to operationalize the *literature review process*.
+Given a set of articles, it filters through titles and abstracts with inclusion/exclusion criteria, an organizes papers for downstream analyses and reporting
+
+## Installation
    - Find the folder you saved this repository to. Copy it. 
    - Open your terminal and run the following command:
    - pip install -r /path/to/your/repository/requirements.txt
 
-## Notebooks Overview
+## Notebooks
 
 This repository contains a set of notebooks designed to assist with the processing and analysis of academic articles. Below is an overview of each notebook's purpose:
 
