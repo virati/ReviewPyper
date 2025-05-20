@@ -1,4 +1,5 @@
-from calvai.chatgpt.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
+from revpyper.chatgpt.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
+
 
 class OpenAISummarizer(OpenAIJsonEvaluator):
     """
@@ -29,6 +30,7 @@ class OpenAISummarizer(OpenAIJsonEvaluator):
         evaluate_all_files():
             Processes the entire text, evaluates each chunk, and categorizes them into results_dict based on model answers.
     """
+
     def __init__(self, api_key_path, text, question, verbose=False):
         """
         Initialize the CaseReportLabeler.
@@ -42,14 +44,16 @@ class OpenAISummarizer(OpenAIJsonEvaluator):
         self.verbose = verbose
         self.question = question
         self.text = text
-        super().__init__(api_key_path, 
-                         json_file_path=None, 
-                         keys_to_consider=None, 
-                         question_type="summarizer", 
-                         question=question, 
-                         model_choice="gpt4",
-                         debug=False, 
-                         test_mode=False)
+        super().__init__(
+            api_key_path,
+            json_file_path=None,
+            keys_to_consider=None,
+            question_type="summarizer",
+            question=question,
+            model_choice="gpt4",
+            debug=False,
+            test_mode=False,
+        )
 
     def read_json(self, _):
         """
@@ -60,7 +64,7 @@ class OpenAISummarizer(OpenAIJsonEvaluator):
             dict: An empty dictionary.
         """
         return {}
-    
+
     def _chunk_text(self, text):
         """
         Yields chunks of text using the chunker.
@@ -98,5 +102,6 @@ class OpenAISummarizer(OpenAIJsonEvaluator):
         chunks = self.call_chunker(self.text)
         if len(chunks) > 1:
             raise ValueError("More than one chunk found. Only one chunk is allowed.")
-        return self._evaluate_single_chunk(chunks[0])     #<-- only evaluate the first chunk
-         
+        return self._evaluate_single_chunk(
+            chunks[0]
+        )  # <-- only evaluate the first chunk

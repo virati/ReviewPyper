@@ -1,11 +1,12 @@
 import pandas as pd
 from tqdm import tqdm
-from calvai.chatgpt.gpt_utils.openai_chat_base import OpenAIChatBase
+from revpyper.chatgpt.gpt_utils.openai_chat_base import OpenAIChatBase
+
 
 class TitleScreener(OpenAIChatBase):
     """
     A class used to screen titles within a CSV file using OpenAI's chat models.
-    This class extends the OpenAIChatBase, which provides the core functionality 
+    This class extends the OpenAIChatBase, which provides the core functionality
     to evaluate text using OpenAI's models. The TitleScreener class
     introduces methods specific to reading titles from a CSV and evaluating them.
 
@@ -33,7 +34,7 @@ class TitleScreener(OpenAIChatBase):
         The question posed to the OpenAI model for title evaluation.
     model_choice : str, optional (default="gpt3_small")
         The choice of OpenAI model to use for evaluation. Options include "gpt3_small", "gpt3_large", and "gpt4".
-        
+
     Example Call:
     _____________
     # Define your API key, path to the CSV file, and the question for evaluation
@@ -55,46 +56,61 @@ class TitleScreener(OpenAIChatBase):
     OUTPUT_PATH = "path/to/save/screened_titles.csv"
     title_screening.to_csv(output_path=OUTPUT_PATH)
     """
-    def __init__(self, api_key_path, csv_path, question, model_choice="gpt3_small", keywords=None):
+
+    def __init__(
+        self, api_key_path, csv_path, question, model_choice="gpt3_small", keywords=None
+    ):
         self.csv_path = csv_path
         self.keywords = keywords
-        super().__init__(api_key_path=api_key_path, question=question, model_choice=model_choice)
+        super().__init__(
+            api_key_path=api_key_path, question=question, model_choice=model_choice
+        )
         self.df = pd.read_csv(csv_path)
-    
+
     def keyword_screen(self):
         """
         Screen titles using a basic language model approach.
-        
+
         Keywords = list of strings which can be used to identify relevant articles
         """
         if self.keywords:
-            self.df["Keyword_Screen"] = self.df["Title"].apply(lambda title: int(any(word in title.lower() for word in self.keywords)))
-    
+            self.df["Keyword_Screen"] = self.df["Title"].apply(
+                lambda title: int(any(word in title.lower() for word in self.keywords))
+            )
+
     def launch_openai_evaluation(self, title):
         conversation = [
-            {"role": "system", "content": "You are a helpful assistant. Responses should be (0 for No, 1 for Yes)"},
-            {"role": "user", "content": f"Based on this title: {title}\n{self.question}\n\nResponse (0 for No, 1 for Yes)"}
-            ]
-        answer, tokens_used =  self.evaluate_with_openai(conversation)
+            {
+                "role": "system",
+                "content": "You are a helpful assistant. Responses should be (0 for No, 1 for Yes)",
+            },
+            {
+                "role": "user",
+                "content": f"Based on this title: {title}\n{self.question}\n\nResponse (0 for No, 1 for Yes)",
+            },
+        ]
+        answer, tokens_used = self.evaluate_with_openai(conversation)
         return 1 if "1" in answer else 0
-        
+
     def openai_screen(self):
         """
         Screen titles using OpenAI GPT based on a posed question.
         """
         tqdm.pandas(desc="OpenAI Screening")
-        self.df["OpenAI_Screen"] = self.df["Title"].progress_apply(lambda title: self.launch_openai_evaluation(title))
-    
+        self.df["OpenAI_Screen"] = self.df["Title"].progress_apply(
+            lambda title: self.launch_openai_evaluation(title)
+        )
+
     def to_csv(self, output_path=None):
         """
         Save the dataframe with the screening results to a CSV.
         """
         if output_path is None:
-            output_path = self.csv_path.split('.')[0] + "_cleaned.csv"
+            output_path = self.csv_path.split(".")[0] + "_cleaned.csv"
         self.df.to_csv(output_path, index=False)
         print(f"Saved finalized CSV to {output_path}")
         return output_path
-        
+
     def run(self):
         """
         Orchestrator method

@@ -1,4 +1,5 @@
-from calvai.chatgpt.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
+from revpyper.chatgpt.gpt_utils.openai_json_evaluator import OpenAIJsonEvaluator
+
 
 class CaseReportLabeler(OpenAIJsonEvaluator):
     """
@@ -29,6 +30,7 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
         evaluate_all_files():
             Processes the entire text, evaluates each chunk, and categorizes them into results_dict based on model answers.
     """
+
     def __init__(self, api_key_path, text, questions, section_headers, verbose=False):
         """
         Initialize the CaseReportLabeler.
@@ -46,14 +48,16 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
         self.text = self.text
         self.results_dict = self._get_results_dict()
         self.acceptable_answers = self._get_acceptable_answers()
-        super().__init__(api_key_path, 
-                         json_file_path=None, 
-                         keys_to_consider=None, 
-                         question_type="labelling", 
-                         question=questions, 
-                         model_choice="gpt3_small_labeler",
-                         debug=False, 
-                         test_mode=False)
+        super().__init__(
+            api_key_path,
+            json_file_path=None,
+            keys_to_consider=None,
+            question_type="labelling",
+            question=questions,
+            model_choice="gpt3_small_labeler",
+            debug=False,
+            test_mode=False,
+        )
 
     def _get_acceptable_answers(self):
         """
@@ -63,7 +67,7 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
             list: Acceptable affirmative answers.
         """
         return ["yes", "true", "y", "1"]
-    
+
     def _get_results_dict(self):
         """
         Initializes the results dictionary with keys from section_headers and empty lists as values.
@@ -77,7 +81,9 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
         """
         keys = list(self.section_headers.keys())
         if len(keys) != 1:
-            raise NotImplementedError("Handling multiple section headers is not implemented yet.")
+            raise NotImplementedError(
+                "Handling multiple section headers is not implemented yet."
+            )
         results_dict = {keys[0]: []}
         return results_dict
 
@@ -90,7 +96,7 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
             dict: An empty dictionary.
         """
         return {}
-    
+
     def _chunk_text(self, text):
         """
         Yields chunks of text using the chunker.
@@ -118,7 +124,7 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
             conversation = self.generate_submission(chunk, q)
             answer, tokens_used = self.evaluate_with_openai(conversation)
             yield q, answer, tokens_used
-    
+
     def _evaluate_response(self, answer, chunk, chunk_idx):
         """
         Adds the chunk to the results_dict based on the answer.
@@ -132,18 +138,19 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
         if any(ans in answer.lower() for ans in self.acceptable_answers):
             self.results_dict[first_key].append(f"Chunk {chunk_idx}: {chunk}")
         else:
-            if 'other' not in self.results_dict:
-                self.results_dict['other'] = []
-            self.results_dict['other'].append(f"Chunk {chunk_idx}: {chunk}")
-        if self.verbose: print(f"Evaluating chunk {chunk_idx} with answer: {answer}")
-    
+            if "other" not in self.results_dict:
+                self.results_dict["other"] = []
+            self.results_dict["other"].append(f"Chunk {chunk_idx}: {chunk}")
+        if self.verbose:
+            print(f"Evaluating chunk {chunk_idx} with answer: {answer}")
+
     def _finalize_results(self):
         """
         Finalizes the results by joining the strings in the results_dict.
         This method is called at the end of the evaluation process.
         """
         for key in self.results_dict:
-            self.results_dict[key] = ' '.join(self.results_dict[key])
+            self.results_dict[key] = " ".join(self.results_dict[key])
 
     def evaluate_all_files(self):
         """
@@ -152,7 +159,8 @@ class CaseReportLabeler(OpenAIJsonEvaluator):
         Returns:
             dict: Dictionary containing text chunks categorized under keys from section_headers.
         """
-        if self.verbose: print("Evaluating text: ", self.text)
+        if self.verbose:
+            print("Evaluating text: ", self.text)
         for chunk in self._chunk_text(self.text):
             for chunk_idx, answer, tokens_used in self._evaluate_chunk(chunk):
                 self._evaluate_response(answer, chunk, chunk_idx)
