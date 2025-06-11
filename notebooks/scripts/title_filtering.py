@@ -1,50 +1,124 @@
-# %% [markdown]
-# # Title Filtering
-# This notebook takes a list of articles (eg csv) and filters for a specific topic based on **article title**.
+# %%
+from dotenv import load_dotenv
+import os
+import dspy
+
+from typing import List
+import entrezpy.esearch.esearcher
+import entrezpy.esearch.esearch_analyzer
+import pandas as pd
+
+
+load_dotenv()
+
+GEMINI_KEY = os.getenv("GEMINI_KEY")
+
+
+class relevant_articles(dspy.Signature):
+    goal: str = dspy.InputField(
+        desc="Determine how relevant each paper is to the stated goal, and the underlying target concept, through the titles and keywords provided."
+    )
+    candidate_titles: List[str] = dspy.InputField(
+        desc="List of candidate article titles to filter. Pay attention to how particular words, or names, in the title may relate to the goal.  Be sure to assess higher order links between words and the target concept."
+    )
+    keyword_list: List[str] = dspy.InputField(
+        desc="List of keywords to filter titles by."
+    )
+    confidence: List[float] = dspy.OutputField(
+        desc="Confidence score, between 0 and 100 with 100 being most confident, for all titles in the list."
+    )
+
 
 # %%
-# bring in relevant API keys
-from dotenv import dotenv_values
+class reviewer:
+    def __init__(self):
+        lm = dspy.LM(
+            "gemini/gemini-2.5-flash-preview-04-17", api_key=GEMINI_KEY, max_tokens=6000
+        )
+        dspy.configure(lm=lm)
 
-config = dotenv_values("../../.env")
+    def filter_titles(
+        self, goal: str, keyword_list: List[str], candidate_titles: List[str]
+    ) -> List[str]:
+        filter_process = dspy.Predict(relevant_articles)
 
-# %% [markdown]
-# ## First Assess Titles
-# Define Path to CSV and Question
-# - csv_path = "path/to/your/titles.csv"
-# - question = "Is this title related to medical research?"
-# - keywords_list = ["focal", "lesion", "brain", "death", "case"]
-
-
-# paper_list_csv_path = "/Users/cu135/Partners HealthCare Dropbox/Calvin Howard/studies/ccm_memory/results/review_pyper/invasive/1962-2013_spreadsheet.csv"
-# core_question = "Does this article look like it may contain a report of invasive brain stimulation altering memory?"
-paper_list_csv_path = "../../assets/test_papers.csv"
-system_prompt = ""
-core_question_prompt = ""
-examples_prompt = "Examples could include articles that talk about `brain stimulation`, `invasive EEG`, or `DBS`, and may discuss `memory enhancement`, `memory impairment`, or diseases like `alzheimers`."
+        response = filter_process(
+            goal=goal, candidate_titles=candidate_titles, keyword_list=keyword_list
+        )
+        return response
 
 
-# %% [markdown]
-# If you also want to perform a keyword-based assessment (free), you can enter a list of strings here:
-# - Just set to None if you don't want to use it. But it's a good baseline.
-# - example: ["Alice in Wonderland Syndrome", "macropsia", "micropsia"]
-keywords_list = None
+def pull_pubmed_data(return_field: List[str] = ["title", "abstract", "authors"]):
+    Entrez.email = os.getenv("ENTREZ_EMAIL")
+    handle = Entrez.esearch(db="pubmed", term="deep brain stimulation", retmax=100)
+    record = Entrez.read(handle)
+    handle.close()
+
+    ids = record["IdList"]
+    handle = Entrez.efetch(db="pubmed", id=ids, rettype="medline", retmode="text")
+    records = Entrez.parse(handle)
+
+    results = []
+    for record in records:
+        entry = {}
+        for field in return_field:
+            if field == "title":
+                entry[field] = record.get("TI", "")
+            elif field == "abstract":
+                entry[field] = record.get("AB", "")
+            elif field == "authors":
+                entry[field] = record.get("AU", [])
+        results.append(entry)
+
+    return pd.DataFrame(results)
+
 
 # %%
-from calvin_utils.gpt_sys_review.gpt_utils import TitleScreener
-
-title_screening = TitleScreener(
-    api_key_path=open_ai_key,
-    csv_path=paper_list_csv_path,
-    question=question,
-    keywords=keywords_list,
-    model_choice="gpt3_small",
+candidate_titles: List[str] = [
+    "Parachute use to prevent death and major trauma related to gravitational challenge: systematic review of randomised controlled trials.",
+    "Invasive Fungal Disease Complicating Coronavirus Disease 2019: When It Rains, It Spores.",
+    "Vancomycin and the Risk of AKI: Now Clearer than Mississippi Mud.",
+    "Hitting the target with non-invasive deep brain stimulation: Potential therapy for addiction, depression, and OCD.",
+    "Clinical use of the polymyxins: the tale of the fox and the cat.",
+    "Deep brain stimulation: current challenges and future directions.",
+    "Bundle in the Bronx: Impact of a Transition-of-Care Outpatient Parenteral Antibiotic Therapy Bundle on All-Cause 30-Day Hospital Readmissions.",
+    "Mount Sinai Is First in the Nation to Perform Deep Brain Stimulation Implant as Part of Clinical Trial for Depression.",
+    "Cryptococcus neoformans: the yeast that likes it hot.",
+    "Researchers use deep brain stimulation to map therapeutic targets for four brain disorders.",
+    "Getting to the bottom of anal evolution.",
+    "Randomized clinical trial of deep brain stimulation for poststroke pain.",
+    "Electronic Health Records and the Increasing Complexity of Medical Practice: “It Never Gets Easier, You Just Go Faster”.",
+    "Deep brain stimulation as an effective treatment option for post–midbrain infarction-related tremor as it presents with Benedikt syndrome.",
+    "Salmonella excretion in joy-riding pigs.",
+    "Do not snog the dog: infective endocarditis due to Capnocytophaga canimorsus.",
+    "Fantastic yeasts and where to find them: the hidden diversity of dimorphic fungal pathogens.",
+    "Experimental replication shows knives manufactured from frozen human feces do not work.",
+    "Hogwarts Headaches — Misery for Muggles.",
+    "Everything is awesome: Don’t forget the Lego.",
+    "Transcranial Magnetic Stimulation: A Made Up Review Article",
+    "Noninvasive Brain Stimulation: A Focused, Still Made Up, Review",
+    "Helen Mayberg's Contribution to Neuropsychiatry: A Made Up Review",
+    "A Life of Circuits: Mahlon DeLong's Story",
+    "The Lord of the Rings",
+    "Severance: The Screenplay",
+    "Linear Algebra for Engineers",
+]
+keyword_list: List[str] = []
+# %%
+agent = reviewer()
+goal = "Identify articles that are moderately likely to cover deep brain stimulation."
+filtered_titles = agent.filter_titles(
+    goal=goal, keyword_list=keyword_list, candidate_titles=candidate_titles
 )
-title_screening.run()
+# %%
+print(filtered_titles.confidence)
 
-# %% [markdown]
-# Your titles have now been screened.
-# - If you are curious about screening titles then abstracts versus titles and abstracts, please see this study:
-#     - doi: 10.2147/CLEP.S43118
-# - Enjoy. If this has been helpful, please consider adding Calvin Howard as a collaborator.
-# - e: choward12@bwh.harvard.edu
+# %%
+
+import numpy as np
+import matplotlib.pyplot as plt
+
+x_range = np.arange(len(candidate_titles))
+confidence = filtered_titles.confidence
+plt.plot(x_range, confidence)
+ax = plt.xticks(x_range, labels=[a[:15] for a in candidate_titles], rotation=90)
