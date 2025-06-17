@@ -3,7 +3,7 @@ from dotenv import load_dotenv
 import os
 import dspy
 
-from typing import List
+from typing import List, Tuple
 import entrezpy.esearch.esearcher
 import entrezpy.esearch.esearch_analyzer
 import pandas as pd
@@ -74,35 +74,30 @@ def pull_pubmed_data(return_field: List[str] = ["title", "abstract", "authors"])
 
 
 # %%
-candidate_titles: List[str] = [
-    "Parachute use to prevent death and major trauma related to gravitational challenge: systematic review of randomised controlled trials.",
-    "Invasive Fungal Disease Complicating Coronavirus Disease 2019: When It Rains, It Spores.",
-    "Vancomycin and the Risk of AKI: Now Clearer than Mississippi Mud.",
-    "Hitting the target with non-invasive deep brain stimulation: Potential therapy for addiction, depression, and OCD.",
-    "Clinical use of the polymyxins: the tale of the fox and the cat.",
-    "Deep brain stimulation: current challenges and future directions.",
-    "Bundle in the Bronx: Impact of a Transition-of-Care Outpatient Parenteral Antibiotic Therapy Bundle on All-Cause 30-Day Hospital Readmissions.",
-    "Mount Sinai Is First in the Nation to Perform Deep Brain Stimulation Implant as Part of Clinical Trial for Depression.",
-    "Cryptococcus neoformans: the yeast that likes it hot.",
-    "Researchers use deep brain stimulation to map therapeutic targets for four brain disorders.",
-    "Getting to the bottom of anal evolution.",
-    "Randomized clinical trial of deep brain stimulation for poststroke pain.",
-    "Electronic Health Records and the Increasing Complexity of Medical Practice: “It Never Gets Easier, You Just Go Faster”.",
-    "Deep brain stimulation as an effective treatment option for post–midbrain infarction-related tremor as it presents with Benedikt syndrome.",
-    "Salmonella excretion in joy-riding pigs.",
-    "Do not snog the dog: infective endocarditis due to Capnocytophaga canimorsus.",
-    "Fantastic yeasts and where to find them: the hidden diversity of dimorphic fungal pathogens.",
-    "Experimental replication shows knives manufactured from frozen human feces do not work.",
-    "Hogwarts Headaches — Misery for Muggles.",
-    "Everything is awesome: Don’t forget the Lego.",
-    "Transcranial Magnetic Stimulation: A Made Up Review Article",
-    "Noninvasive Brain Stimulation: A Focused, Still Made Up, Review",
-    "Helen Mayberg's Contribution to Neuropsychiatry: A Made Up Review",
-    "A Life of Circuits: Mahlon DeLong's Story",
-    "The Lord of the Rings",
-    "Severance: The Screenplay",
-    "Linear Algebra for Engineers",
+candidate_articles: List[Tuple[str, bool]] = [
+    (
+        "Parachute use to prevent death and major trauma related to gravitational challenge: systematic review of randomised controlled trials.",
+        False,
+    ),
+    (
+        "Invasive Fungal Disease Complicating Coronavirus Disease 2019: When It Rains, It Spores.",
+        False,
+    ),
+    (
+        "Hitting the target with non-invasive deep brain stimulation: Potential therapy for addiction, depression, and OCD.",
+        True,
+    ),
+    ("Deep brain stimulation: current challenges and future directions.", True),
+    (
+        "Electronic Health Records and the Increasing Complexity of Medical Practice: “It Never Gets Easier, You Just Go Faster”.",
+        False,
+    ),
+    ("Transcranial Magnetic Stimulation: A Made Up Review Article", False),
+    ("Noninvasive Brain Stimulation: A Focused, Still Made Up, Review", False),
+    ("Helen Mayberg's Contribution to Neuropsychiatry: A Made Up Review", True),
 ]
+candidate_titles = [a[0] for a in candidate_articles]
+candidate_truths = [a[1] for a in candidate_articles]
 keyword_list: List[str] = []
 # %%
 agent = reviewer()
