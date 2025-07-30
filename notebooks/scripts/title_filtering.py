@@ -1,15 +1,8 @@
+#%%
+%load_ext autoreload
+%autoreload 2
 # %%
-from dotenv import load_dotenv
-import os
-
-import numpy as np
-import matplotlib.pyplot as plt
-
 from revpyper.agents import reviewer
-
-load_dotenv()
-
-GEMINI_KEY = os.getenv("GEMINI_KEY")
 
 
 # %%
@@ -35,20 +28,24 @@ candidate_articles = [
     ("Noninvasive Brain Stimulation: A Focused, Still Made Up, Review", False),
     ("Helen Mayberg's Contribution to Neuropsychiatry: A Made Up Review", True),
 ]
+
+
+# %%
 candidate_titles = [a[0] for a in candidate_articles]
 candidate_truths = [a[1] for a in candidate_articles]
 keyword_list = []
 # %%
-agent = reviewer(LLM_KEY=GEMINI_KEY, LLM_MODEL="gemini/gemini-2.5-flash-preview-04-17")
+agent = reviewer(LLM_MODEL="gemini/gemini-2.5-flash-preview-04-17")
 goal = "Identify articles that are moderately likely to cover deep brain stimulation."
 
 filtered_titles = agent.filter_titles(
     goal=goal, keyword_list=keyword_list, candidate_titles=candidate_titles
 )
 # %%
+import numpy as np
+import matplotlib.pyplot as plt
 print(filtered_titles.confidence)
 
-# %%
 x_range = np.arange(len(candidate_titles))
 confidence = filtered_titles.confidence
 plt.plot(x_range, confidence)
